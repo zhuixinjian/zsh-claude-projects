@@ -14,41 +14,48 @@ A zsh plugin that lets you browse and resume [Claude Code](https://docs.anthropi
 
 ## Dependencies
 
-| Tool | Install |
-|------|---------|
-| [jq](https://jqlang.github.io/jq/) | `brew install jq` |
-| [fzf](https://github.com/junegunn/fzf) | `brew install fzf` |
+| Tool                                                          | Install                                    |
+| ------------------------------------------------------------- | ------------------------------------------ |
+| [jq](https://jqlang.github.io/jq/)                            | `brew install jq`                          |
+| [fzf](https://github.com/junegunn/fzf)                        | `brew install fzf`                         |
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `npm install -g @anthropic-ai/claude-code` |
 
 ## Install
 
 ```zsh
-git clone https://github.com/user/zsh-claude-projects.git ~/.zsh/zsh-claude-projects
+git clone https://github.com/zhuixinjian/zsh-claude-projects.git ~/.zsh/zsh-claude-projects
 echo 'source ~/.zsh/zsh-claude-projects/claude-projects.plugin.zsh' >> ~/.zshrc
 ```
 
-To use a custom command name instead of `p`, set `ZSH_CLAUDE_PROJECTS_ALIAS` **before** sourcing:
+The default command is `p`. To use a custom name, add this to your `.zshrc` **before** the source line:
 
 ```zsh
-export ZSH_CLAUDE_PROJECTS_ALIAS="pc"
-source ~/.zsh/zsh-claude-projects/claude-projects.plugin.zsh
+ZSH_CLAUDE_PROJECTS_ALIAS="pc"   # now use `pc` instead of `p`
 ```
 
 ## Usage
 
+```zsh
+❯ p            # browse projects & sessions
+❯ p -d         # same, but launch claude with --dangerously-skip-permissions
 ```
-p            # browse projects & sessions
-p -d         # same, but launch claude with --dangerously-skip-permissions
-```
+
+### Normal mode (`p`)
+
+![p mode](images/p.png)
+
+### Danger mode (`p -d`)
+
+![p -d mode](images/p-d.png)
 
 A tree-style fzf picker will appear:
 
-| Action | Effect |
-|--------|--------|
-| Select a **project** (directory row) | `cd` into the project and start a new Claude session |
-| Select a **session** (indented row) | `cd` into the project and resume that session (`claude -r <id>`) |
-| `Ctrl-D` on a session | Delete the session (with confirmation) |
-| `Esc` | Cancel |
+| Action                               | Effect                                                           |
+| ------------------------------------ | ---------------------------------------------------------------- |
+| Select a **project** (directory row) | `cd` into the project and start a new Claude session             |
+| Select a **session** (indented row)  | `cd` into the project and resume that session (`claude -r <id>`) |
+| `Ctrl-D` on a session                | Delete the session (with confirmation)                           |
+| `Esc`                                | Cancel                                                           |
 
 The `-d` flag passes `--dangerously-skip-permissions` to Claude, skipping all permission prompts. The picker will show a red prompt and border as a visual warning. Use with caution.
 
