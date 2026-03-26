@@ -13,6 +13,7 @@ typeset -g _CP_AWK=$(command -v awk 2>/dev/null || echo /usr/bin/awk)
 typeset -g _CP_DATE=$(command -v date 2>/dev/null || echo /usr/bin/date)
 typeset -g _CP_TAIL=$(command -v tail 2>/dev/null || echo /usr/bin/tail)
 typeset -g _CP_RM=$(command -v rm 2>/dev/null || echo /bin/rm)
+typeset -g _CP_MKTEMP=$(command -v mktemp 2>/dev/null || echo /usr/bin/mktemp)
 
 _cp_check_deps() {
   local missing=()
@@ -142,6 +143,9 @@ _cp_main() {
     fzf_opts+=(--color=prompt:red,border:red)
   fi
 
+  local _cp_act_file
+  _cp_act_file=$("$_CP_MKTEMP")
+
   local selected
   selected=$(
     _cp_build_list | "$_CP_FZF" \
@@ -155,14 +159,18 @@ _cp_main() {
       --reverse \
       --border=rounded \
       --info=inline \
-      --expect=ctrl-d \
+      --bind="ctrl-d:execute-silent(printf ctrl-d > '$_cp_act_file')+accept" \
+      --bind="esc:abort" \
       "${fzf_opts[@]}"
   )
+
+  local key=""
+  [[ -f "$_cp_act_file" ]] && key=$(< "$_cp_act_file")
+  "$_CP_RM" -f "$_cp_act_file"
+
   [[ -z "$selected" ]] && return 0
 
-  local parts=("${(@f)selected}")
-  local key="${parts[1]}" action_line="${parts[2]}"
-  [[ -z "$action_line" ]] && return 0
+  local action_line="$selected"
 
   if [[ "$key" == "ctrl-d" ]]; then
     local tag path session_id
